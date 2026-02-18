@@ -20,19 +20,16 @@ Zero external API calls. Zero additional cost. Everything runs locally.
 ## Quick Start
 
 ```bash
-# Clone & build
-git clone https://github.com/0xbeekeeper/claw-diary.git
-cd claw-diary
-npm install && npm run build
+# Install globally
+npm install -g claw-diary
 ```
 
 ### Install as Claude Code Skill
 
-Copy the skill file so Claude Code can discover it:
-
 ```bash
+# Copy the skill file so Claude Code can discover it
 mkdir -p ~/.claude/skills/claw-diary
-cp SKILL.md ~/.claude/skills/claw-diary/SKILL.md
+cp "$(npm root -g)/claw-diary/SKILL.md" ~/.claude/skills/claw-diary/SKILL.md
 ```
 
 ### Hook Configuration (Claude Code)
@@ -47,7 +44,7 @@ Add the following to your `~/.claude/settings.json` to enable automatic activity
         "hooks": [
           {
             "type": "command",
-            "command": "node /path/to/claw-diary/dist/scripts/collector.js before"
+            "command": "claw-diary collect before"
           }
         ]
       }
@@ -57,7 +54,7 @@ Add the following to your `~/.claude/settings.json` to enable automatic activity
         "hooks": [
           {
             "type": "command",
-            "command": "node /path/to/claw-diary/dist/scripts/collector.js after"
+            "command": "claw-diary collect after"
           }
         ]
       }
@@ -67,7 +64,7 @@ Add the following to your `~/.claude/settings.json` to enable automatic activity
         "hooks": [
           {
             "type": "command",
-            "command": "node /path/to/claw-diary/dist/scripts/collector.js session-start"
+            "command": "claw-diary collect session-start"
           }
         ]
       }
@@ -77,7 +74,7 @@ Add the following to your `~/.claude/settings.json` to enable automatic activity
         "hooks": [
           {
             "type": "command",
-            "command": "node /path/to/claw-diary/dist/scripts/collector.js session-stop"
+            "command": "claw-diary collect session-stop"
           }
         ]
       }
@@ -86,14 +83,12 @@ Add the following to your `~/.claude/settings.json` to enable automatic activity
 }
 ```
 
-Replace `/path/to/claw-diary` with the actual install path.
-
 ### Try It Out
 
 ```bash
 # Generate timeline from existing data (if any)
-npm run timeline
-npm run analytics
+claw-diary timeline
+claw-diary stats
 ```
 
 ## Slash Commands
@@ -192,6 +187,7 @@ npm run server     # Start visualization server at http://127.0.0.1:3847
 
 ```
 scripts/
+  cli.ts          # Unified CLI entry point (claw-diary <command>)
   types.ts        # Core types, pricing table, shared utilities
   collector.ts    # Hook-based event capture (stdin -> JSONL)
   summarizer.ts   # Daily & weekly narrative generation
