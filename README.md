@@ -116,14 +116,14 @@ Create `~/.claw-diary/config.json` to customize recording behavior:
 
 ```json
 {
-  "recordingLevel": "full"
+  "recordingLevel": "summary"
 }
 ```
 
 | Level | Behavior |
 |-------|----------|
-| `full` | Record everything including tool args and result previews (default) |
-| `summary` | Skip tool arguments and output previews — lighter storage |
+| `full` | Record everything including tool args and result previews |
+| `summary` | Skip tool arguments and output previews (default) |
 | `minimal` | Only record session start/end — lowest footprint |
 
 ## Architecture

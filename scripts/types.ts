@@ -158,7 +158,7 @@ export function formatTokens(tokens: number): string {
 
 export function loadConfig(): DiaryConfig {
   const configPath = join(getDataDir(), 'config.json');
-  const defaults: DiaryConfig = { recordingLevel: 'full', dataDir: getDataDir() };
+  const defaults: DiaryConfig = { recordingLevel: 'summary', dataDir: getDataDir() };
   if (!existsSync(configPath)) return defaults;
   try {
     const raw = JSON.parse(readFileSync(configPath, 'utf-8'));

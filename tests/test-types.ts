@@ -81,7 +81,7 @@ describe('formatTokens', () => {
 describe('loadConfig', () => {
   it('returns defaults when no config file exists', () => {
     const config = loadConfig();
-    assert.equal(config.recordingLevel, 'full');
+    assert.equal(config.recordingLevel, 'summary');
     assert.ok(config.dataDir.endsWith('.claw-diary'));
   });
 });

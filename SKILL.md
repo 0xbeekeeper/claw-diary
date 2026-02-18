@@ -120,7 +120,7 @@ Show the current AI persona file. The user can review and edit the persona to gu
 
 - All data stored locally at `~/.claw-diary/` — nothing uploaded to any server
 - Automatic sanitization of env variables, API keys, passwords, and tokens
-- Configurable recording level: `full` | `summary` | `minimal`
+- Configurable recording level: `summary` (default) | `full` | `minimal`
 - One-click data deletion via `/diary:clear`
 
 ## External Endpoints
