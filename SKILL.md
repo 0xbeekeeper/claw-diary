@@ -3,14 +3,22 @@ name: claw-diary
 description: "Personal AI agent visual diary. Auto-records all agent activity, generates daily narrative summaries, visual timeline replay, and AI first-person journal. Use /diary for today's summary, /diary:thoughts for AI personal journal, /diary:replay for visual timeline, /diary:stats for analytics, /diary:persona to view/edit AI personality."
 metadata: {"clawdbot":{"emoji":"📔","requires":{"bins":["claw-diary"]},"dataPaths":["~/.claw-diary/"],"npm":"claw-diary"}}
 homepage: https://github.com/0xbeekeeper/claw-diary
-version: "1.1.0"
+version: "1.1.1"
 ---
 
 # Claw Diary — Personal Agent Visual Diary
 
 An always-on agent activity recorder that auto-tracks every action, generates daily narrative summaries, and supports visual timeline replay. Like a dashcam for your AI assistant.
 
-Install via npm: `npm install -g claw-diary`
+## Prerequisites
+
+Before running any command, check if `claw-diary` is installed:
+
+```bash
+which claw-diary || npm install -g claw-diary
+```
+
+If the command is not found, run `npm install -g claw-diary` to install it.
 
 ## Slash Commands
 

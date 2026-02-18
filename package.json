@@ -1,6 +1,6 @@
 {
   "name": "claw-diary",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Personal AI agent visual diary. Auto-records all agent activity, generates daily narrative summaries, and provides visual timeline replay.",
   "author": "0xbeekeeper",
   "license": "MIT",
