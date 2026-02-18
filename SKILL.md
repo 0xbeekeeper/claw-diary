@@ -1,7 +1,7 @@
 ---
 name: claw-diary
 description: "Personal AI agent visual diary. Auto-records all agent activity, generates daily narrative summaries, visual timeline replay, and AI first-person journal. Use /diary for today's summary, /diary:thoughts for AI personal journal, /diary:replay for visual timeline, /diary:stats for analytics, /diary:persona to view/edit AI personality."
-metadata: {"clawdbot":{"emoji":"📔","requires":{"bins":["node"],"repo":"https://github.com/0xbeekeeper/claw-diary"},"dataPaths":["~/.claw-diary/"]}}
+metadata: {"clawdbot":{"emoji":"📔","requires":{"bins":["node"]},"dataPaths":["~/.claw-diary/"]}}
 homepage: https://github.com/0xbeekeeper/claw-diary
 version: "1.0.0"
 ---
@@ -9,19 +9,6 @@ version: "1.0.0"
 # Claw Diary — Personal Agent Visual Diary
 
 An always-on agent activity recorder that auto-tracks every action, generates daily narrative summaries, and supports visual timeline replay. Like a dashcam for your AI assistant.
-
-## Prerequisites
-
-> **This skill requires external scripts.** Clone and build the repository before use:
->
-> ```bash
-> git clone https://github.com/0xbeekeeper/claw-diary.git
-> cd claw-diary && npm install && npm run build
-> ```
->
-> Then configure hooks manually in `~/.claude/settings.json` — see the [README](https://github.com/0xbeekeeper/claw-diary#hook-configuration-claude-code) for hook configuration details.
-
-All data is stored locally at `~/.claw-diary/` as daily JSONL files. No data leaves your machine.
 
 ## Slash Commands
 
@@ -116,30 +103,17 @@ Show the current AI persona file. The user can review and edit the persona to gu
 
 **Implementation:** Read and display `~/.claw-diary/persona.md`. If the file doesn't exist, inform the user that it will be created automatically on the first `/diary:thoughts` run. If the user wants to edit, help them modify it.
 
-## Privacy & Security
-
-- All data stored locally at `~/.claw-diary/` — nothing uploaded to any server
-- Automatic sanitization of env variables, API keys, passwords, and tokens
-- Configurable recording level: `summary` (default) | `full` | `minimal`
-- One-click data deletion via `/diary:clear`
-
-## External Endpoints
-
-This skill makes **no external network requests**. All processing is local.
-
 ## Data Access
 
 This skill reads and writes **only** within `~/.claw-diary/`:
 
 | Path | Access | Purpose |
 |------|--------|---------|
-| `~/.claw-diary/events/*.jsonl` | Read | Daily activity events (written by hooks) |
+| `~/.claw-diary/events/*.jsonl` | Read | Daily activity events |
 | `~/.claw-diary/journal/*.md` | Read/Write | AI journal entries (`/diary:thoughts`) |
 | `~/.claw-diary/persona.md` | Read/Write | AI persona file (`/diary:thoughts`, `/diary:persona`) |
 | `~/.claw-diary/config.json` | Read | Optional user configuration |
 
-No files outside `~/.claw-diary/` are read or written. No network requests are made. Hook scripts (collector.js) receive event data via stdin only.
+## External Endpoints
 
-## Trust Statement
-
-claw-diary only reads from stdin (hook event data) and writes to `~/.claw-diary/`. It does not access the network, modify your codebase, or read files outside its data directory. Source code is fully auditable at https://github.com/0xbeekeeper/claw-diary.
+None. This skill makes no external network requests.
