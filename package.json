@@ -2,16 +2,16 @@
   "name": "claw-diary",
   "version": "1.0.0",
   "description": "Personal AI agent visual diary. Auto-records all agent activity, generates daily narrative summaries, and provides visual timeline replay.",
-  "author": "cryptoking",
+  "author": "0xbeekeeper",
   "license": "MIT",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cryptoking/claw-diary.git"
+    "url": "git+https://github.com/0xbeekeeper/claw-diary.git"
   },
-  "homepage": "https://github.com/cryptoking/claw-diary",
+  "homepage": "https://github.com/0xbeekeeper/claw-diary",
   "bugs": {
-    "url": "https://github.com/cryptoking/claw-diary/issues"
+    "url": "https://github.com/0xbeekeeper/claw-diary/issues"
   },
   "keywords": [
     "ai-agent",

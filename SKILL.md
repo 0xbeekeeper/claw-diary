@@ -2,7 +2,7 @@
 name: claw-diary
 description: "Personal AI agent visual diary. Auto-records all agent activity, generates daily narrative summaries, and provides visual timeline replay. Use /diary to view today's summary, /diary:replay to launch visual timeline, /diary:stats for cost and pattern analytics."
 metadata: {"clawdbot":{"emoji":"📔","requires":{"bins":["node"]},"files":["scripts/*"]}}
-homepage: https://github.com/cryptoking/claw-diary
+homepage: https://github.com/0xbeekeeper/claw-diary
 version: "1.0.0"
 ---
 
