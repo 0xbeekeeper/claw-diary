@@ -2,6 +2,7 @@
 
 > A dashcam for your AI assistant. Auto-records all agent activity, generates daily narrative summaries, visual timeline replay, and cost analytics.
 
+[![npm](https://img.shields.io/npm/v/claw-diary.svg)](https://www.npmjs.com/package/claw-diary)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
 
@@ -20,14 +21,18 @@ Zero external API calls. Zero additional cost. Everything runs locally.
 ## Quick Start
 
 ```bash
-# Install globally
 npm install -g claw-diary
 ```
 
 ### Install as Claude Code Skill
 
+**Option A** — From ClaWHub:
 ```bash
-# Copy the skill file so Claude Code can discover it
+clawhub install claw-diary
+```
+
+**Option B** — Manual:
+```bash
 mkdir -p ~/.claude/skills/claw-diary
 cp "$(npm root -g)/claw-diary/SKILL.md" ~/.claude/skills/claw-diary/SKILL.md
 ```
@@ -105,6 +110,23 @@ claw-diary stats
 | `/diary:thoughts` | AI personal journal entry (first-person) |
 | `/diary:persona` | View/edit AI persona |
 
+## CLI
+
+After installing globally, the `claw-diary` command is available:
+
+```bash
+claw-diary summarize              # Today's diary summary
+claw-diary summarize week         # Weekly summary
+claw-diary summarize date 2026-02-18  # Specific date
+claw-diary stats                  # Cost & activity analytics
+claw-diary search "refactor"      # Search historical events
+claw-diary export md              # Export as markdown (or html, json)
+claw-diary replay                 # Launch visual timeline in browser
+claw-diary timeline               # Generate timeline HTML file
+claw-diary clear --yes            # Delete all data
+claw-diary collect before         # Hook: pre-tool-use event
+```
+
 ## Configuration
 
 Create `~/.claw-diary/config.json` to customize recording behavior:
@@ -124,14 +146,13 @@ Create `~/.claw-diary/config.json` to customize recording behavior:
 ## Architecture
 
 ```
-Hook events (stdin)
+claw-diary <command>        (unified CLI entry point)
        |
-  collector.ts  -->  ~/.claw-diary/events/YYYY-MM-DD.jsonl
-       |
-       +---> summarizer.ts  -->  Daily/weekly markdown narratives
-       +---> timeline.ts    -->  Interactive HTML timeline
-       +---> analytics.ts   -->  Cost stats, patterns, export
-       +---> server.ts      -->  Local HTTP server (timeline + reports)
+       +---> collect         Hook events (stdin) --> ~/.claw-diary/events/YYYY-MM-DD.jsonl
+       +---> summarize       Daily/weekly markdown narratives
+       +---> timeline        Interactive HTML timeline generator
+       +---> stats/search    Cost analytics, patterns, export
+       +---> replay          Local HTTP server (timeline + reports)
 ```
 
 All data stored as daily JSONL files under `~/.claw-diary/events/`. No database required.
@@ -178,9 +199,11 @@ This lets you track costs for any model — including fine-tuned, self-hosted, o
 ## Development
 
 ```bash
-npm run build      # Compile TypeScript
-npm test           # Run tests (Node.js built-in test runner)
-npm run server     # Start visualization server at http://127.0.0.1:3847
+git clone https://github.com/0xbeekeeper/claw-diary.git
+cd claw-diary
+npm install && npm run build   # Compile TypeScript
+npm test                       # Run tests (Node.js built-in test runner)
+npm link                       # Link for local development
 ```
 
 ### Project Structure
