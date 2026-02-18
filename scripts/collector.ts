@@ -197,11 +197,13 @@ async function main(): Promise<void> {
         tokenUsage: hookData.tokenUsage ? {
           input: (hookData.tokenUsage as any).input || 0,
           output: (hookData.tokenUsage as any).output || 0,
-          estimatedCost: estimateCost(
-            (hookData.model as string) || 'default',
-            (hookData.tokenUsage as any).input || 0,
-            (hookData.tokenUsage as any).output || 0,
-          ),
+          estimatedCost: (hookData.tokenUsage as any).estimatedCost
+            ?? estimateCost(
+              (hookData.model as string) || 'default',
+              (hookData.tokenUsage as any).input || 0,
+              (hookData.tokenUsage as any).output || 0,
+              config,
+            ),
         } : undefined,
         model: (hookData.model as string) || undefined,
       });
@@ -294,11 +296,13 @@ async function main(): Promise<void> {
         tokenUsage: hookData.tokenUsage ? {
           input: (hookData.tokenUsage as any).input || 0,
           output: (hookData.tokenUsage as any).output || 0,
-          estimatedCost: estimateCost(
-            (hookData.model as string) || 'default',
-            (hookData.tokenUsage as any).input || 0,
-            (hookData.tokenUsage as any).output || 0,
-          ),
+          estimatedCost: (hookData.tokenUsage as any).estimatedCost
+            ?? estimateCost(
+              (hookData.model as string) || 'default',
+              (hookData.tokenUsage as any).input || 0,
+              (hookData.tokenUsage as any).output || 0,
+              config,
+            ),
         } : undefined,
         model: (hookData.model as string) || undefined,
       });

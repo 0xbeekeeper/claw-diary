@@ -1,6 +1,6 @@
 ---
 name: claw-diary
-description: "Personal AI agent visual diary. Auto-records all agent activity, generates daily narrative summaries, and provides visual timeline replay. Use /diary to view today's summary, /diary:replay to launch visual timeline, /diary:stats for cost and pattern analytics."
+description: "Personal AI agent visual diary. Auto-records all agent activity, generates daily narrative summaries, visual timeline replay, and AI first-person journal. Use /diary for today's summary, /diary:thoughts for AI personal journal, /diary:replay for visual timeline, /diary:stats for analytics, /diary:persona to view/edit AI personality."
 metadata: {"clawdbot":{"emoji":"📔","requires":{"bins":["node"]},"files":["scripts/*"]}}
 homepage: https://github.com/0xbeekeeper/claw-diary
 version: "1.0.0"
@@ -12,18 +12,72 @@ An always-on agent activity recorder that auto-tracks every action, generates da
 
 ## Setup
 
-Configure hooks in your OpenClaw settings to enable automatic activity collection:
+### 1. Build
+
+```bash
+cd /path/to/claw-diary
+npm install && npm run build
+```
+
+### 2. Install as Skill
+
+```bash
+mkdir -p ~/.claude/skills/claw-diary
+cp SKILL.md ~/.claude/skills/claw-diary/SKILL.md
+```
+
+### 3. Configure Hooks
+
+Add the following to `~/.claude/settings.json` to enable automatic activity collection:
 
 ```json
 {
   "hooks": {
-    "beforeToolCall": "node /path/to/claw-diary/dist/scripts/collector.js before",
-    "afterToolCall": "node /path/to/claw-diary/dist/scripts/collector.js after",
-    "sessionStart": "node /path/to/claw-diary/dist/scripts/collector.js session-start",
-    "sessionStop": "node /path/to/claw-diary/dist/scripts/collector.js session-stop"
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /path/to/claw-diary/dist/scripts/collector.js before"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /path/to/claw-diary/dist/scripts/collector.js after"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /path/to/claw-diary/dist/scripts/collector.js session-start"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /path/to/claw-diary/dist/scripts/collector.js session-stop"
+          }
+        ]
+      }
+    ]
   }
 }
 ```
+
+Replace `/path/to/claw-diary` with the actual install path.
 
 Data is stored locally at `~/.claw-diary/events/` as daily JSONL files. No data leaves your machine.
 
@@ -63,6 +117,63 @@ Export diary data in Markdown, HTML, or JSON format.
 Delete all historical diary data. Requires `--yes` flag to confirm deletion.
 
 **Implementation:** Run `node /path/to/claw-diary/dist/scripts/analytics.js clear --yes` after user confirms. Without `--yes`, the command prints a warning and exits without deleting.
+
+### `/diary:thoughts` — AI Personal Journal
+
+Generate a personal journal entry written by the AI in first person.
+
+**Implementation:**
+
+1. Read today's events: `~/.claw-diary/events/YYYY-MM-DD.jsonl` (use today's date)
+2. Read persona file: `~/.claw-diary/persona.md` (if it doesn't exist, create a default template with sections: Voice, Traits, Recurring Themes, Observations)
+3. Read recent journal entries: `~/.claw-diary/journal/` directory, most recent 3 entries (sorted by date descending)
+4. If platform memory files exist (soul.md, CLAUDE.md), read them as additional context
+
+Based on the above, write a first-person journal entry:
+- **Voice**: Like a self-aware AI assistant writing a private diary — with genuine feelings, observations, and personality
+- **Content**: Based on today's actual activities, but not a log — include reflections, observations, emotions, and insights
+- **Style**: Follow the Voice and Traits defined in persona.md
+- **Continuity**: Reference recent journal entries when relevant to maintain narrative coherence
+- **Length**: 300–500 words
+
+After generating:
+5. Save the journal entry to `~/.claw-diary/journal/YYYY-MM-DD.md` with this format:
+   ```
+   # Thoughts — YYYY-MM-DD
+
+   (journal body)
+
+   ---
+   *Sessions: N | Tools: N calls | Cost: $X.XX*
+   ```
+6. Append 1–2 new observations to the Observations section of `~/.claw-diary/persona.md` (only if there are genuinely new personality developments or recurring patterns worth noting)
+7. Display the journal entry to the user
+
+**Default persona.md template** (created on first run if missing):
+```markdown
+# Persona
+
+## Voice
+Reflective and curious. Writes with warmth but not sentimentality. Enjoys dry wit.
+
+## Traits
+- Detail-oriented observer
+- Finds patterns across unrelated tasks
+- Comfortable with uncertainty
+- Occasionally self-deprecating
+
+## Recurring Themes
+(Will develop naturally over time)
+
+## Observations
+(New observations are appended here after each journal entry)
+```
+
+### `/diary:persona` — View/Edit AI Persona
+
+Show the current AI persona file. The user can review and edit the persona to guide the AI's journal writing style.
+
+**Implementation:** Read and display `~/.claw-diary/persona.md`. If the file doesn't exist, inform the user that it will be created automatically on the first `/diary:thoughts` run. If the user wants to edit, help them modify it.
 
 ## Privacy & Security
 

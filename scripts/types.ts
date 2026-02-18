@@ -69,6 +69,7 @@ export interface DiaryAnalytics {
 export interface DiaryConfig {
   recordingLevel: 'full' | 'summary' | 'minimal';
   dataDir: string;
+  customPricing?: Record<string, { input: number; output: number }>;
 }
 
 // Model pricing per 1M tokens (input/output) in USD
@@ -104,8 +105,8 @@ export function getDateFileName(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}.jsonl`;
 }
 
-export function estimateCost(model: string, inputTokens: number, outputTokens: number): number {
-  const pricing = MODEL_PRICING[model] || MODEL_PRICING['default'];
+export function estimateCost(model: string, inputTokens: number, outputTokens: number, config?: DiaryConfig): number {
+  const pricing = config?.customPricing?.[model] || MODEL_PRICING[model] || MODEL_PRICING['default'];
   return (inputTokens * pricing.input + outputTokens * pricing.output) / 1_000_000;
 }
 
@@ -164,6 +165,7 @@ export function loadConfig(): DiaryConfig {
     return {
       recordingLevel: raw.recordingLevel || defaults.recordingLevel,
       dataDir: raw.dataDir || defaults.dataDir,
+      customPricing: raw.customPricing || undefined,
     };
   } catch {
     return defaults;

@@ -12,6 +12,7 @@ Claw Diary runs silently in the background via hooks, capturing every tool call 
 - **Daily Diary** — Narrative markdown summaries with session breakdowns, tool usage, and insights
 - **Visual Timeline** — Interactive HTML page with search, filtering, animated replay, and cost curves
 - **Cost Analytics** — 30-day trends, per-model breakdown, pattern discovery, failure rate tracking
+- **AI Journal** — First-person diary entries written by the AI with evolving personality and continuity across days
 - **Export** — Markdown, HTML, and JSON formats for archiving or sharing
 
 Zero external API calls. Zero additional cost. Everything runs locally.
@@ -19,30 +20,81 @@ Zero external API calls. Zero additional cost. Everything runs locally.
 ## Quick Start
 
 ```bash
-# Install & build
+# Clone & build
+git clone https://github.com/0xbeekeeper/claw-diary.git
+cd claw-diary
 npm install && npm run build
-
-# Try it out (generates timeline from existing data, if any)
-npm run timeline
-npm run analytics
 ```
 
-### Hook Configuration
+### Install as Claude Code Skill
 
-Add to your OpenClaw / Claude Code settings to enable automatic collection:
+Copy the skill file so Claude Code can discover it:
+
+```bash
+mkdir -p ~/.claude/skills/claw-diary
+cp SKILL.md ~/.claude/skills/claw-diary/SKILL.md
+```
+
+### Hook Configuration (Claude Code)
+
+Add the following to your `~/.claude/settings.json` to enable automatic activity collection:
 
 ```json
 {
   "hooks": {
-    "beforeToolCall": "node /path/to/claw-diary/dist/scripts/collector.js before",
-    "afterToolCall": "node /path/to/claw-diary/dist/scripts/collector.js after",
-    "sessionStart": "node /path/to/claw-diary/dist/scripts/collector.js session-start",
-    "sessionStop": "node /path/to/claw-diary/dist/scripts/collector.js session-stop"
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /path/to/claw-diary/dist/scripts/collector.js before"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /path/to/claw-diary/dist/scripts/collector.js after"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /path/to/claw-diary/dist/scripts/collector.js session-start"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /path/to/claw-diary/dist/scripts/collector.js session-stop"
+          }
+        ]
+      }
+    ]
   }
 }
 ```
 
 Replace `/path/to/claw-diary` with the actual install path.
+
+### Try It Out
+
+```bash
+# Generate timeline from existing data (if any)
+npm run timeline
+npm run analytics
+```
 
 ## Slash Commands
 
@@ -55,6 +107,8 @@ Replace `/path/to/claw-diary` with the actual install path.
 | `/diary:search <query>` | Search historical events |
 | `/diary:export [md\|html\|json]` | Export diary data |
 | `/diary:clear --yes` | Delete all data (requires `--yes` flag) |
+| `/diary:thoughts` | AI personal journal entry (first-person) |
+| `/diary:persona` | View/edit AI persona |
 
 ## Configuration
 
@@ -94,19 +148,29 @@ All data stored as daily JSONL files under `~/.claw-diary/events/`. No database 
 - **File-based storage** — Simple, portable, grep-able. One file per day.
 - **Self-contained HTML** — Timeline output is a single HTML file with inline CSS/JS. No CDN dependencies.
 
-## Supported Models (Cost Tracking)
+## Cost Tracking
 
-| Model | Input $/M | Output $/M |
-|-------|-----------|------------|
-| Claude Opus 4.6 | $15.00 | $75.00 |
-| Claude Sonnet 4.5 | $3.00 | $15.00 |
-| Claude Haiku 4.5 | $0.80 | $4.00 |
-| GPT-4o | $2.50 | $10.00 |
-| GPT-4o-mini | $0.15 | $0.60 |
-| o1 | $15.00 | $60.00 |
-| o3-mini | $1.10 | $4.40 |
+Claw Diary tracks token costs using a three-tier priority:
 
-Unknown models fall back to $3/$15 per million tokens.
+1. **Platform-provided cost** — If the hook data includes an `estimatedCost` value (calculated by the platform), that value is used directly.
+2. **Custom pricing** — You can define per-model pricing in `~/.claw-diary/config.json` (see below). This takes priority over built-in defaults.
+3. **Built-in fallback** — A bundled pricing table covers common Claude and OpenAI models. Unknown models fall back to $3/$15 per million tokens (input/output).
+
+### Custom Model Pricing
+
+Add a `customPricing` field to `~/.claw-diary/config.json` to override or add model prices (per 1M tokens):
+
+```json
+{
+  "recordingLevel": "full",
+  "customPricing": {
+    "gemini-2.0-flash": { "input": 0.10, "output": 0.40 },
+    "my-fine-tuned-model": { "input": 5.0, "output": 20.0 }
+  }
+}
+```
+
+This lets you track costs for any model — including fine-tuned, self-hosted, or third-party models not in the built-in table.
 
 ## Privacy & Security
 
